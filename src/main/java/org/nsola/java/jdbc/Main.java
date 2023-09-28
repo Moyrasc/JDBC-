@@ -1,5 +1,6 @@
 package org.nsola.java.jdbc;
 
+import org.nsola.java.jdbc.model.Categoria;
 import org.nsola.java.jdbc.model.Producto;
 import org.nsola.java.jdbc.repositorio.ProductoRepositorioImpl;
 import org.nsola.java.jdbc.repositorio.Repositorio;
@@ -24,9 +25,12 @@ public class Main {
 
             System.out.println("============= Añadir Producto =============");
             Producto producto = new Producto();
-            producto.setNombre("Radio");
-            producto.setPrecio(60);
+            producto.setNombre("PC Imperial i7");
+            producto.setPrecio(2600);
             producto.setFecha_registro(new Date());
+            Categoria categoria = new Categoria();
+            categoria.setId(3L);
+            producto.setCategoria(categoria);
             repositorio.guardar(producto);
             System.out.println("Producto añadido correctamente");
             repositorio.listar().forEach(System.out::println);
