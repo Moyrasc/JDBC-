@@ -7,11 +7,10 @@ import org.nsola.java.jdbc.utils.ConexionDB;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Date;
 
 
-public class Main {
-    public static void main(String[] args) throws SQLException {
+public class MainUpdate {
+    public static void main(String[] args) {
 
         //Para evitar anidamientos definimos las sentencias dentro del try y de esa manera se cerrarán de forma automática (Auto closed)
         try (Connection conn = ConexionDB.getInstance()){
@@ -22,16 +21,22 @@ public class Main {
             System.out.println("============= Buscar por ID =============");
             System.out.println(repositorio.porId(2L));
 
-            System.out.println("============= Añadir Producto =============");
+            System.out.println("============= Actualizar Producto =============");
             Producto producto = new Producto();
-            producto.setNombre("Radio");
-            producto.setPrecio(60);
-            producto.setFecha_registro(new Date());
+            producto.setId(3L);
+            producto.setNombre("Radio Bluetooth");
+            producto.setPrecio(90);
             repositorio.guardar(producto);
-            System.out.println("Producto añadido correctamente");
+            System.out.println("Producto actualizado");
+
+            System.out.println("============= Eliminar Producto =============");
+            repositorio.eliminar(3L);
+            System.out.println("Producto eliminado");
+
             repositorio.listar().forEach(System.out::println);
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        }
     }
-}
+
