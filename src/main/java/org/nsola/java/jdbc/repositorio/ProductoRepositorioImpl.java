@@ -30,21 +30,21 @@ public class ProductoRepositorioImpl implements Repositorio<Producto> {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        ;
+
 
         return productos;
     }
 
     @Override
-    public Producto porId(Long id) throws SQLException {
+    public Producto porId(Long id) {
         Producto producto = null;
         try (PreparedStatement stmt = getConnection().prepareStatement("SELECT * FROM productos WHERE id = ?")) {
             stmt.setLong(1, id);
-            ResultSet res = stmt.executeQuery();
-            if (res.next()) {
-                producto = crearProducto(res);
+            try (ResultSet res = stmt.executeQuery()) {
+                if (res.next()) {
+                    producto = crearProducto(res);
+                }
             }
-            res.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -53,12 +53,40 @@ public class ProductoRepositorioImpl implements Repositorio<Producto> {
 
     @Override
     public void guardar(Producto producto) {
+        String sql;
+        //Actualiza producto existence
+        if (producto.getId() != null && producto.getId() > 0 ) {
+            sql = "UPDATE productos SET nombre=?, precio=? WHERE id=?";
+        //Crea y guarda producto nuevo
+        } else {
+            sql = "INSERT INTO productos(nombre,precio,fecha_registro) VALUES (?,?,?)";
+        }
+        try(PreparedStatement stmt = getConnection().prepareStatement(sql)) {
+            stmt.setString(1, producto.getNombre());
+            stmt.setLong(2, producto.getPrecio());
 
+            //Verificacion adicional ya que el 3 parametro corresponde al id y se necesita comprobar si existe
+            if (producto.getId() != null && producto.getId() > 0 ) {
+                stmt.setLong(3, producto.getId());
+            }else {
+                //tenemos que convertir el java util en java sql
+                stmt.setDate(3, new Date(producto.getFecha_registro().getTime()));
+            }
+            //sentencia de ejecución
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public void eliminar(Long id) {
-
+        try(PreparedStatement stmt = getConnection().prepareStatement("DELETE FROM productos WHERE id= ?")) {
+            stmt.setLong(1,id);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static Producto crearProducto(ResultSet res) throws SQLException {

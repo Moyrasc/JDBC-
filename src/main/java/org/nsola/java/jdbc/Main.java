@@ -13,7 +13,7 @@ public class Main {
     public static void main(String[] args) throws SQLException {
 
         //Para evitar anidamientos definimos las sentencias dentro del try y de esa manera se cerrarán de forma automática (Auto closed)
-        try (Connection conn = ConexionDB.getInstance();){
+        try (Connection conn = ConexionDB.getInstance()){
             Repositorio<Producto> repositorio = new ProductoRepositorioImpl();
             repositorio.listar().forEach(System.out::println);
 
